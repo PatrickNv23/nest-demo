@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Header, HttpCode, HttpStatus, Param, Pos
 import { CreateCatDto } from "./dtos/create-cat.dto";
 import { UpdateCatDto } from "./dtos/update-cat.dto";
 import { CatService } from "./cat.service";
-import { Cat } from "./interface/cat.interface";
+import { Cat } from "./interfaces/cat.interface";
 
 @Controller('cat')
 export class CatController {
