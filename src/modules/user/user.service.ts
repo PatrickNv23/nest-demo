@@ -3,6 +3,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
+import { Role } from 'src/common/types/role.enum';
 
 @Injectable()
 export class UserService {
@@ -97,5 +98,18 @@ export class UserService {
       where: { is_active: true, id },
       data: { is_active: false }
     });
+  }
+
+  async findAgentsByDepartment(departmentId: string) {
+    return await this.prisma.users.findMany({
+      where: {
+        department_id: departmentId,
+        is_active: true,
+        roles: {
+          name: Role.AGENT,
+          is_active: true
+        }
+      }
+    })
   }
 }

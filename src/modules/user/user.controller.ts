@@ -32,4 +32,10 @@ export class UserController {
   remove(@Param('id') id: string) {
     return this.userService.remove(id);
   }
+
+  @Get('department/:departmentId/agents')
+  async findAgentsByDepartment(@Param('departmentId') departmentId: string) {
+    return await this.userService.findAgentsByDepartment(departmentId);
+  }
+
 }
