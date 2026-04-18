@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch } from '@nestjs/common';
 import { TicketService } from './ticket.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
+import { UpdateTicketStatusDto } from './dto/update-ticket-status.dto';
 
 @Controller('ticket')
 export class TicketController {
@@ -29,5 +30,13 @@ export class TicketController {
   @Get('department/:departmentId/unassigned')
   findUnassignedByDepartment(@Param('departmentId') departmentId: string) {
     return this.ticketService.findUnassignedByDepartment(departmentId);
+  }
+
+  @Patch(':id/status')
+  updateStatus(
+    @Param('id') ticketId: string,
+    @Body() updateTicketStatusDto: UpdateTicketStatusDto
+  ) {
+    return this.ticketService.updateStatus(ticketId, updateTicketStatusDto);
   }
 }

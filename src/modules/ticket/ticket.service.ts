@@ -36,14 +36,14 @@ export class TicketService {
   }
 
   async findCustomerTickets(customerId: string) {
-    await this.prisma.tickets.findMany({
+    return await this.prisma.tickets.findMany({
       where: { creator_user_id: customerId, is_active: true },
       include: { ticket_statuses: true, ticket_types: true }
     })
   }
 
   async findAgentTickets(agentId: string) {
-    await this.prisma.tickets.findMany({
+    return await this.prisma.tickets.findMany({
       where: { assigned_agent_id: agentId, is_active: true },
       include: { ticket_statuses: true, ticket_types: true }
     })
@@ -72,7 +72,7 @@ export class TicketService {
     });
   }
 
-  async updateStatus(ticketId: string, updaterId: string, updateTicketStatusDto: UpdateTicketStatusDto) {
+  async updateStatus(ticketId: string, updateTicketStatusDto: UpdateTicketStatusDto) {
 
     const ticket = await this.prisma.tickets.findUnique({
       where: { id: ticketId, is_active: true },
@@ -99,7 +99,33 @@ export class TicketService {
     }
 
     // update
+    this.prisma.$transaction(async (tx) => {
+      const ticketUpdated = await tx.tickets.update({
+        where: { id: ticketId, is_active: true },
+        data: {
+          status_id: updateTicketStatusDto.statusId,
+          updated_at: new Date(),
+          updated_by: updateTicketStatusDto.updaterId
+        }
+      });
 
+      await tx.ticket_status_history.create({
+        data: {
+          ticket_id: ticketId,
+          status_before: ticket.ticket_statuses.name,
+          status_after: nextStatus.name,
+          changed_by_user_id: updateTicketStatusDto.updaterId,
+          change_reason: updateTicketStatusDto.changeReason,
+          created_by: updateTicketStatusDto.updaterId,
+          updated_by: updateTicketStatusDto.updaterId,
+          is_active: true
+        }
+      });
+
+      //notification with email and sms
+
+      return ticketUpdated;
+    });
   }
 }
 
