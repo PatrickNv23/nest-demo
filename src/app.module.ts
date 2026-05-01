@@ -8,9 +8,10 @@ import { RoleModule } from './modules/role/role.module';
 import { DepartmentModule } from './modules/department/department.module';
 import { TicketModule } from './modules/ticket/ticket.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { CommentModule } from './modules/comment/comment.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), UserModule, PrismaModule, RoleModule, DepartmentModule, TicketModule, AuthModule],
+  imports: [ConfigModule.forRoot(), UserModule, PrismaModule, RoleModule, DepartmentModule, TicketModule, AuthModule, CommentModule],
   controllers: [AppController],
   providers: [AppService],
 })
