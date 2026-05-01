@@ -1,8 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCommentDto } from './dto/create-comment.dto';
-import { UpdateCommentDto } from './dto/update-comment.dto';
 import { PrismaService } from '../prisma/prisma.service';
-import { create } from 'domain';
+import path from 'path';
 
 @Injectable()
 export class CommentService {
@@ -87,6 +86,34 @@ export class CommentService {
         is_active: true
       }
     });
+  }
+
+  async findOne(commentId: string) {
+    const comment = await this.prisma.comments.findUnique({
+      where: { id: commentId, is_active: true },
+      include: {
+        comment_attachments: {
+          where: {
+            is_active: true
+          }
+        }
+      }
+    });
+
+    if (!comment) {
+      throw new NotFoundException('Comment not found');
+    }
+
+    if (comment.comment_attachments.length === 0) {
+      throw new NotFoundException('No attachments found for this comment');
+    }
+
+    return comment;
+  }
+
+  getFilePath(attachment: any): string {
+    const fileName = path.basename(attachment.file_url);
+    return path.join(process.cwd(), 'uploads', 'comments', fileName);
   }
 
 }

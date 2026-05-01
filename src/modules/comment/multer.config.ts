@@ -1,11 +1,12 @@
 import { diskStorage } from "multer";
 import { extname, join } from "path";
+import { randomUUID } from "crypto";
 
 export const multerOptions = {
     storage: diskStorage({
-        destination: join(__dirname, '..', '..', 'uploads', 'comments'),
+        destination: './uploads/comments',
         filename: (req, file, callback) => {
-            const uniqueSuffix = self.crypto.randomUUID();
+            const uniqueSuffix = randomUUID();
             const extension = extname(file.originalname);
             callback(null, `${uniqueSuffix}${extension}`);
         },
